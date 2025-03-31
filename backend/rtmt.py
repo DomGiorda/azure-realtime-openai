@@ -61,14 +61,15 @@ class RTMiddleTier:
     max_tokens: Optional[int] = None
     disable_audio: Optional[bool] = None
     voice_choice: Optional[str] = None
-    api_version: str
+    api_version: Optional[str] = "2024-10-01-preview"
     _tools_pending = {}
     _token_provider = None
 
-    def __init__(self, endpoint: str, deployment: str, credentials: AzureKeyCredential | DefaultAzureCredential, voice_choice: Optional[str] = None):
+    def __init__(self, endpoint: str, deployment: str, credentials: AzureKeyCredential | DefaultAzureCredential, voice_choice: Optional[str] = None, api_version: Optional[str] = "2024-10-01-preview"):
         self.endpoint = endpoint
         self.deployment = deployment
         self.voice_choice = voice_choice
+        self.api_version = api_version
         if voice_choice is not None:
             logger.info("Realtime voice choice set to %s", voice_choice)
         if isinstance(credentials, AzureKeyCredential):

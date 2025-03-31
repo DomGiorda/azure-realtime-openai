@@ -10,6 +10,7 @@ __pycache__/
 .devcontainer/**
 # C extensions
 *.so
+*.env*
 
 # Distribution / packaging
 .Python

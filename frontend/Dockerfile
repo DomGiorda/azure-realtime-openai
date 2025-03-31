@@ -1,7 +1,7 @@
 # Stage 1: Build the Vite app
-FROM node:20-alpine AS build-stage
+FROM node:20-alpine AS builder
 
-WORKDIR /frontend
+WORKDIR /app
 COPY package*.json ./
 RUN npm install
 # Set the working directory inside the container
