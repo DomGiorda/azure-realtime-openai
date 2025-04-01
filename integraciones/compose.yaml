@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  ai-rag-backend:
+    image: realtime-backend
+    pull_policy: if_not_present
+    container_name: realtime-backend
+    env_file: "./.env"
+    ports:
+      - "8765:8765"
+    networks:
+      - azure-realtime
+  ai-rag-frontend:
+    image: realtime-frontend
+    pull_policy: if_not_present
+    container_name: realtime-frontent
+    ports:
+      - "8000:3000"
+    depends_on:
+      - ai-rag-backend
+    networks:
+      - azure-realtime
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+    ports:
+      - 1888:1888 # pprof extension
+      - 8888:8888 # Prometheus metrics exposed by the Collector
+      - 8889:8889 # Prometheus exporter metrics
+      - 13133:13133 # health_check extension
+      - 4317:4317 # OTLP gRPC receiver
+      - 4318:4318 # OTLP http receiver
+      - 55679:55679 # zpages extension
+    networks:
+      - azure-realtime
+    environment:
+      OTEL_COLLECTOR_HOST: "0.0.0.0"
+      OTEL_COLLECTOR_PORT_GRPC: "4317"
+      OTEL_COLLECTOR_PORT_HTTP: "4318"
+  grafana: # Si quieres correr Grafana dentro de Docker Compose
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana # Persistencia de datos (opcional)
+    networks:
+      - azure-realtime
+    depends_on:
+      - otel-collector
+
+networks:
+  azure-realtime:
+    driver: bridge
+    # default MTU size in docker-compose is 1500
+    driver_opts:
+      com.docker.network.driver.mtu: 1440
+
+volumes: # Define el volumen para Grafana (opcional)
+  grafana_data:
