@@ -102,9 +102,33 @@ jobs:
           format: 'sarif'
           output: 'trivy-results-frontend.sarif'
 
-      # Upload scan results to GitHub Security tab
-      - name: Upload Trivy scan results
-        uses: github/codeql-action/upload-sarif@v2
-        if: github.event_name != 'pull_request'
-        with:
-          sarif_file: 'trivy-results-*.sarif'
+      - name: Trivy Summary
+        if: always() && github.event_name != 'pull_request'
+        run: |
+          echo "## Trivy Scan Summary" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f "trivy-results-backend.sarif" ]; then
+            echo "### Backend Image" >> $GITHUB_STEP_SUMMARY
+            ERRORS=$(jq '[.runs[0].results[] | select(.level == "error")] | length' trivy-results-backend.sarif)
+            WARNINGS=$(jq '[.runs[0].results[] | select(.level == "warning")] | length' trivy-results-backend.sarif)
+            NOTES=$(jq '[.runs[0].results[] | select(.level == "note")] | length' trivy-results-backend.sarif)
+            echo "| Level | Count |" >> $GITHUB_STEP_SUMMARY
+            echo "|:---|:---:|" >> $GITHUB_STEP_SUMMARY
+            echo "| Errors (Critical, High) | $ERRORS |" >> $GITHUB_STEP_SUMMARY
+            echo "| Warnings (Medium) | $WARNINGS |" >> $GITHUB_STEP_SUMMARY
+            echo "| Notes (Low, Unknown) | $NOTES |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ -f "trivy-results-frontend.sarif" ]; then
+            echo "### Frontend Image" >> $GITHUB_STEP_SUMMARY
+            ERRORS=$(jq '[.runs[0].results[] | select(.level == "error")] | length' trivy-results-frontend.sarif)
+            WARNINGS=$(jq '[.runs[0].results[] | select(.level == "warning")] | length' trivy-results-frontend.sarif)
+            NOTES=$(jq '[.runs[0].results[] | select(.level == "note")] | length' trivy-results-frontend.sarif)
+            echo "| Level | Count |" >> $GITHUB_STEP_SUMMARY
+            echo "|:---|:---:|" >> $GITHUB_STEP_SUMMARY
+            echo "| Errors (Critical, High) | $ERRORS |" >> $GITHUB_STEP_SUMMARY
+            echo "| Warnings (Medium) | $WARNINGS |" >> $GITHUB_STEP_SUMMARY
+            echo "| Notes (Low, Unknown) | $NOTES |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
