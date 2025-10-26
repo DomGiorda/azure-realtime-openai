@@ -20,6 +20,8 @@ env:
   BACKEND_IMAGE_NAME: backend
   FRONTEND_IMAGE_NAME: frontend
 
+  OWNER: ${{ github.repository_owner }}
+
 jobs:
   build-and-push-images:
     runs-on: ubuntu-latest
@@ -50,23 +52,13 @@ jobs:
         id: meta-backend
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=sha
+          images: ${{ env.REGISTRY }}/${{ env.OWNER }}/${{ env.BACKEND_IMAGE_NAME }}
 
       - name: Extract Docker metadata for Frontend
         id: meta-frontend
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=sha
+          images: ${{ env.REGISTRY }}/${{ env.OWNER }}/${{ env.FRONTEND_IMAGE_NAME }}
 
       # Build and push Backend Docker image
       - name: Build and push Backend Docker image
@@ -97,7 +89,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         if: github.event_name != 'pull_request'
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}:${{ steps.meta-backend.outputs.version }}
+          image-ref: ${{ steps.meta-backend.outputs.tags }}
           format: 'sarif'
           output: 'trivy-results-backend.sarif'
 
@@ -106,7 +98,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         if: github.event_name != 'pull_request'
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ steps.meta-frontend.outputs.version }}
+          image-ref: ${{ steps.meta-frontend.outputs.tags }}
           format: 'sarif'
           output: 'trivy-results-frontend.sarif'
 
