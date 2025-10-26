@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: voicerag-backend
+  labels:
+    app: voicerag-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: voicerag-backend
+  template:
+    metadata:
+      labels:
+        app: voicerag-backend
+    spec:
+      containers:
+      - name: voicerag-backend
+        image: ${REGISTRY_NAME}.azurecr.io/voicerag-backend:latest
+        env:
+        - name: AZURE_OPENAI_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: voicerag-variables
+              key: AZURE_OPENAI_ENDPOINT
+        - name: AZURE_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: voicerag-variables
+              key: AZURE_CLIENT_SECRET
+        - name: AZURE_TENANT_ID
+          valueFrom:
+            secretKeyRef:
+              name: voicerag-variables
+              key: AZURE_TENANT_ID
+        - name: AZURE_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: voicerag-variables
+              key: AZURE_CLIENT_ID
+        - name: AZURE_SEARCH_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: voicerag-variables
+              key: AZURE_SEARCH_ENDPOINT
+        - name: AZURE_OPENAI_REALTIME_VOICE_CHOICE
+          valueFrom:
+            secretKeyRef:
+              name: voicerag-variables
+              key: AZURE_OPENAI_REALTIME_VOICE_CHOICE
+        - name: AZURE_OPENAI_REALTIME_DEPLOYMENT
+          valueFrom:
+            secretKeyRef:
+              name: voicerag-variables
+              key: AZURE_OPENAI_REALTIME_DEPLOYMENT
+        - name: AZURE_SEARCH_CONTENT_FIELD
+          valueFrom:
+            secretKeyRef:
+              name: voicerag-variables
+              key: AZURE_SEARCH_CONTENT_FIELD
+        - name: AZURE_SEARCH_EMBEDDING_FIELD
+          valueFrom:
+            secretKeyRef:
+              name: voicerag-variables
+              key: AZURE_SEARCH_EMBEDDING_FIELD
+        - name: AZURE_SEARCH_IDENTIFIER_FIELD
+          valueFrom:
+            secretKeyRef:
+              name: voicerag-variables
+              key: AZURE_SEARCH_IDENTIFIER_FIELD
+        - name: AZURE_SEARCH_SEMANTIC_CONFIGURATION
+          valueFrom:
+            secretKeyRef:
+              name: voicerag-variables
+              key: AZURE_SEARCH_SEMANTIC_CONFIGURATION
+        - name: AZURE_SEARCH_INDEX
+          valueFrom:
+            secretKeyRef:
+              name: voicerag-variables
+              key: AZURE_SEARCH_INDEX
+        - name: AZURE_SEARCH_TITLE_FIELD
+          valueFrom:
+            secretKeyRef:
+              name: voicerag-variables
+              key: AZURE_SEARCH_TITLE_FIELD
+        - name: AZURE_SEARCH_USE_VECTOR_QUERY
+          valueFrom:
+            secretKeyRef:
+              name: voicerag-variables
+              key: AZURE_SEARCH_USE_VECTOR_QUERY
+        - name: RUNNING_IN_PRODUCTION
+          valueFrom:
+            secretKeyRef:
+              name: voicerag-variables
+              key: RUNNING_IN_PRODUCTION
+        - name: OPENAI_API_VERSION
+          valueFrom:
+            secretKeyRef:
+              name: voicerag-variables
+              key: OPENAI_API_VERSION                         
+        ports:
+        - containerPort: 8765

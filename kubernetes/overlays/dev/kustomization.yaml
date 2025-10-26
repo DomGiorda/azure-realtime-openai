@@ -1,0 +1,33 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../../base
+
+namespace: voicerag-dev
+
+commonLabels:
+  environment: development
+
+patches:
+- patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 1
+  target:
+    kind: Deployment
+    name: voicerag-backend
+- patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 1
+  target:
+    kind: Deployment
+    name: voicerag-frontend
+
+configMapGenerator:
+- name: voicerag-config
+  behavior: merge
+  literals:
+  - RUNNING_IN_PRODUCTION="false"
+  - LOG_LEVEL="debug"

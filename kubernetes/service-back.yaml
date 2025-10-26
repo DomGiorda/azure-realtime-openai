@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: voicerag-backend-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8765
+      targetPort: 8765
+  selector:
+    app: voicerag-backend
