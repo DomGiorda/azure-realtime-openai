@@ -13,7 +13,7 @@ RAG applications use a retrieval system to get the right grounding data for LLMs
 
 ### Using an already existing Azure AI Search index
 
-You can use an existing index directly. If you created that index using the "Import and vectorize data" option in the portal, no further changes are needed. Otherwise, you'll need to update the field names in the [code](https://github.com/Azure-Samples/aisearch-openai-rag-audio/blob/main/app/backend/ragtools.py) to match your text/vector fields.
+You can use an existing index directly. If you created that index using the "Import and vectorize data" option in the portal, no further changes are needed. Otherwise, you'll need to update the field names in the [code](https://github.com/DomGiorda/azure-realtime-openai/blob/main/backend/ragtools.py) to match your text/vector fields.
 
 ### Creating a new index with sample data or your own
 

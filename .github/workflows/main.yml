@@ -2,10 +2,18 @@ name: Build and Deploy VoiceRAG
 
 on:
   push:
-    branches: [ "main", "develop", "feature/*" ]
+    branches: [ "main", "develop" ]
     tags: [ 'v*.*.*' ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
   pull_request:
-    branches: [ "main", "develop"]
+    branches: [ "main", "develop" ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.gitignore'
 
 env:
   REGISTRY: ghcr.io
