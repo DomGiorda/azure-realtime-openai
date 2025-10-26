@@ -52,32 +52,15 @@ To run this application locally, you'll need to install the following prerequisi
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Azure-Samples/aisearch-openai-rag-audio
-   cd aisearch-openai-rag-audio
+   git clone https://github.com/DomGiorda/azure-realtime-openai
+   cd azure-realtime-openai
    ```
 
 2. Continue to [Deploying the App](#deploying-the-app) section.
 
 ## Deploying the app
 
-You can deploy this application to different Azure container platforms. By default, the `azd up` command will deploy to Azure Container Apps, but you can modify the deployment target.
-
-### Deployment Options
-
-1. **Azure Container Apps (Default)**
-   - Serverless container platform
-   - Auto-scaling capabilities
-   - Minimal management overhead
-
-2. **Azure Kubernetes Service (AKS)**
-   - For production-grade Kubernetes deployments
-   - Advanced scaling and networking
-   - Full container orchestration control
-   
-3. **App Service for Containers**
-   - PaaS offering with simplified management
-   - Integrated with Azure App Service features
-   - Familiar web app deployment experience
+You can deploy this application to different Azure container platforms. By default, the `azd up` command will deploy to Azure Container Apps.
 
 ### Default Deployment
 
@@ -113,84 +96,44 @@ You can deploy this application to different Azure container platforms. By defau
    * **Important**: Beware that the resources created by this command will incur immediate costs, primarily from the AI Search resource. These resources may accrue costs even if you interrupt the command before it is fully executed. You can run `azd down` or delete the resources manually to avoid unnecessary spending.
    * You will be prompted to select two locations, one for the majority of resources and one for the OpenAI resource, which is currently a short list. That location list is based on the [OpenAI model availability table](https://learn.microsoft.com/azure/ai-services/openai/concepts/models#global-standard-model-availability) and may become outdated as availability changes.
 
-### Alternative Deployment Options
+## local development
 
-#### Deploy to AKS
-1. Ensure you have an AKS cluster or create one:
-   ```bash
-   az aks create -g <resource-group> -n <cluster-name> --node-count 1
-   ```
-2. Connect to your cluster:
-   ```bash
-   az aks get-credentials -g <resource-group> -n <cluster-name>
-   ```
-3. Deploy the application:
-   ```bash
-   kubectl apply -f kubernetes/
-   ```
-
-#### Deploy to App Service for Containers
-1. Create an App Service plan:
-   ```bash
-   az appservice plan create -g <resource-group> -n <plan-name> --is-linux --sku B1
-   ```
-2. Create and deploy the web app:
-   ```bash
-   az webapp create -g <resource-group> -p <plan-name> -n <app-name> --deployment-container-image-name <your-image>
-   ```
-
-### Post-Deployment
-After successful deployment (to any platform), you will see a URL printed to the console. Navigate to that URL to interact with the app in your browser. Click the "Start conversation" button, say "Hello", and then ask a question about your data like "What is the whistleblower policy for Contoso electronics?"
-
-You can also run the app locally by following the instructions in [the next section](#development-server).
-
-## Local Development
-
-You can run the application locally using either:
-- Azure services provisioned through the deployment process
-- Your own [existing services](resources/existing_services.md)
+You can run the application locally using Docker Compose.
 
 ### Environment Setup
 
-1. Configure environment variables:
-   - If deployed with `azd up`: Use the generated `.env` file
-   - If using existing services: Create `.env` with:
+1. Configure environment variables by creating a `.env` file in the root of the project with the following content:
 
    ```env
-   AZURE_OPENAI_ENDPOINT=wss://<your instance name>.openai.azure.com
-   AZURE_OPENAI_REALTIME_DEPLOYMENT=gpt-4o-realtime-preview
-   AZURE_OPENAI_REALTIME_VOICE_CHOICE=<echo/alloy/shimmer>
-   AZURE_OPENAI_API_KEY=<your api key>
-   AZURE_SEARCH_ENDPOINT=https://<your service name>.search.windows.net
-   AZURE_SEARCH_INDEX=<your index name>
-   AZURE_SEARCH_API_KEY=<your api key>
+      AZURE_CLIENT_ID=
+      AZURE_CLIENT_SECRET=
+      AZURE_TENANT_ID=
+      AZURE_OPENAI_ENDPOINT=
+      AZURE_SEARCH_ENDPOINT=
+      AZURE_OPENAI_REALTIME_DEPLOYMENT=gpt-4o-realtime-preview
+      AZURE_OPENAI_REALTIME_VOICE_CHOICE=alloy
+      AZURE_SEARCH_CONTENT_FIELD=chunk
+      AZURE_SEARCH_EMBEDDING_FIELD=text-vector    
+      AZURE_SEARCH_IDENTIFIER_FIELD=ID
+      AZURE_SEARCH_INDEX=voicerag-intvect
+      AZURE_SEARCH_SEMANTIC_CONFIGURATION=default
+      AZURE_SEARCH_TITLE_FIELD=title
+      AZURE_SEARCH_USE_VECTOR_QUERY=True
+      RUNNING_IN_PRODUCTION=false
+      OPENAI_API_VERSION=
    ```
 
    Note: For Entra ID authentication, omit the API keys to use your local user credentials or managed identity.
 
-### Starting the Application
+### Starting the Application with Docker Compose
 
-1. Launch the development server:
+1. Launch the application using Docker Compose:
 
-   **Windows:**
-   ```powershell
-   pwsh .\scripts\start.ps1
-   ```
-
-   **Linux/Mac:**
    ```bash
-   ./scripts/start.sh
+   docker-compose -f integrations/compose.yaml up --build
    ```
 
 2. Access the application at [http://localhost:8765](http://localhost:8765)
-
-### Testing the Application
-
-1. Click "Start conversation"
-2. Say "Hello" to test the voice input
-3. Try asking a question about the data, e.g., "What is the whistleblower policy for Contoso electronics?"
-
-![Application Interface](resources/talktoyourdataapp.png)
 
 ## Cost Management
 
