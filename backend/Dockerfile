@@ -1,4 +1,4 @@
-FROM python:3.12-slim as builder
+FROM python:3.12-slim AS builder
 
 # Set working directory for the build stage
 WORKDIR /build
@@ -39,6 +39,8 @@ USER appuser
 
 # Expose port
 EXPOSE 8765
+
+HEALTHCHECK CMD curl --fail http://localhost:8765/health || exit 1
 
 # Run the application
 CMD ["python3", "-m", "gunicorn", "app:create_app", "-b", "0.0.0.0:8765", "--worker-class", "aiohttp.GunicornWebWorker"]
